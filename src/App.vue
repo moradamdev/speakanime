@@ -10,18 +10,6 @@
   <router-view/>
 </template>
 
-// <script>
-// export default {
-//   methods:{
-//     updateTime(){
-
-//     }
-//   }
-// }
-// </script>
-
-
-
 <style>
 *{
   margin:0em;
@@ -39,6 +27,7 @@ body{
 }
 
 #nav {
+  
   padding: 15px;
   display: flex;
   justify-content: space-between;
@@ -66,5 +55,25 @@ body{
 }
 #router-links{
   padding-top: .7em;
+}
+
+@media only screen and (min-width: 800px) {
+  #router-links{
+    position: absolute;
+    /* position:relative; */
+
+    width:100%;
+    left:0;
+    right:0;
+    margin:auto;
+    /* height: 5em; */
+    text-align: center;
+    font-size: 1.5em;
+    top:.2em;
+    
+  }
+  #nav a {
+    margin-right:1em;
+  }
 }
 </style>

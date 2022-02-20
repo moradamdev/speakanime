@@ -13,10 +13,10 @@
         </div>
         
         <div class="thread-content">
-            <img class="thread-img" :src="anime.images.jpg.image_url" alt="thread image">
+            <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
             <div class="thread-text">
-                <h3>{{anime.title}} Thread</h3>
-                <p>Discuss the newest episode of {{anime.title_english || anime.title}} down below.</p>
+                <h3>{{anime.animeListObj.title}} Thread</h3>
+                <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.title}} down below.</p>
             </div>
             
         </div>
@@ -28,10 +28,10 @@
             <ul>
                 <li class="comment-list" >
                     <div class="thread-content">
-                        <img class="thread-img" :src="anime.images.jpg.image_url" alt="thread image">
+                        <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
                         <div class="thread-text-incomment">
                             <h3>{{anime.title}} Thread</h3>
-                            <p>Discuss the newest episode of {{anime.title_english || anime.title}} down below.</p>
+                            <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.title}} down below.</p>
                         </div>
                     </div>
                     <div class="close-thread-btn">
@@ -48,10 +48,7 @@
                             <button class="send-btn" @click="sendComment">Send</button>
                         </form>
                     </div>
-                    <Comment v-for="c in commentArr" :key='c.commentID' :cArr='c' :actualArr='commentArr'/>
-                    <!-- <Comment v-for="(c, index) in commentArr" :key='c.commentID' :cArr='c' :actualArr='commentArr' :index='index'/> -->
-                    <!-- <Comment v-for="(c, index) in this.loadComm" :key='c.commentID' :cArr='c.commentObject' :actualArr='this.loadComm' :index='index'/> -->
-                    <!-- <Comment v-for="(c, index) in this.loadComm" :key='c.commentID' :cArr='c.commentObject' :actualArr='this.loadComm[index]' :index='index'/> -->
+                    <Comment v-for="c in animeFBData[index].comments" :key='c.commentID' :cArr='c' :actualArr='commentArr' :anime='anime'/>
                 </li>
             </ul>
         </div>
@@ -61,16 +58,16 @@
 </template>
 
 <script>
+    import 'firebase/compat/auth'
+    import 'firebase/compat/firestore'
     import Comment from '@/components/Comment.vue';
-    import {userLoadComments} from '@/firebase'
+    import { arrayUnion } from 'firebase/firestore'
+    import { userLoadAnimelist, incrementPostNo, getPostNum } from '@/firebase'
+    import { getDB } from '@/firebase'
     let date = new Date();
     let postCount = 0;
+
     export default {
-        
-        setup() {
-            const loadComm = userLoadComments();
-            return {loadComm}
-        },
         data(){
             return {
                 month: date.getMonth(),
@@ -80,6 +77,7 @@
                 minutes: date.getMinutes(),
                 showReplyBox: false,
                 showCommentThread: false,
+                animeFBData: userLoadAnimelist(),
                 name: '',
                 text: '',
                 commentArr:[
@@ -98,31 +96,48 @@
         },
         props: {
             anime: Object,
+            database: Object,
+            index: Number
         },
         methods: {
-            sendComment(e){
+            async sendComment(e){
                 e.preventDefault();
                 var d = new Date();
+                var postNo = 0
                 if(this.name == ''){
                     this.name = 'Anon';
                 }
-                // console.log(this.name)
-                // console.log(this.text)
-                // console.log(d.getHours());
-                // console.log(d.getMinutes());
-                var tempCommentObj = {
-                    commentName: this.name,
-                    commentText: this.text,
-                    commentID: this.addCounter(),
-                    commentMonth: d.getMonth(),
-                    commentDay: d.getDate(),
-                    commentYear: d.getFullYear(),
-                    commentMinutes: ('0'+d.getMinutes()).slice(-2),
-                    commentHours: ('0'+d.getHours()).slice(-2)
-                }
-                this.commentArr.push(tempCommentObj);
-                this.text = ''
-                this.showReplyBox = false;
+                incrementPostNo()
+                .then(() => {
+                    
+                    var tempCommentObj = {
+                        commentName: this.name,
+                        commentText: this.text,
+                        commentID: getPostNum(),
+                        commentMonth: d.getMonth(),
+                        commentDay: d.getDate(),
+                        commentYear: d.getFullYear(),
+                        commentMinutes: ('0'+d.getMinutes()).slice(-2),
+                        commentHours: ('0'+d.getHours()).slice(-2),
+                    }
+                    this.commentArr.push(tempCommentObj);
+                    // this.database.comments.push(tempCommentObj)
+                    // const list = await getAnimeList(this.anime.id)
+                    // console.log(this.anime.id)
+                    // const firebaseApp = firebase.initializeApp(config)
+                    // const db = firebaseApp.firestore()
+
+                    getDB().collection('anime-list').doc(this.anime.id).update({
+                        // comments: {tempCommentObj}
+                        comments: arrayUnion(tempCommentObj)
+                    })
+                    
+                    this.text = ''
+                    this.showReplyBox = false;
+                })
+
+                
+                
             },
             xOut(){
                 this.text = ''
@@ -147,6 +162,7 @@
         margin:0em;
         margin-bottom: 1em;
         padding:0em;
+        background: #536985;
     }
     .header-text:strong{
         font-weight: bold;
@@ -167,7 +183,7 @@
     .thread-img{
         border-radius: 7%;
         width:33%;
-        max-width: 400px;
+        max-width: 250px;
         padding:.5em;
         /* look at that vue jikan tutorial and see how he scaled images */
     }
@@ -269,6 +285,25 @@
     .x-btn-com:hover{
         cursor: pointer;
         background: #1a2636;
+    }
+    @media only screen and (min-width: 800px) {
+        .thread-container{
+            padding:1em;
+            border-radius: 20px;
+        }
+
+    }
+    @media only screen and (min-width: 1400px) {
+        .thread-container{
+            margin-left:4em;
+            margin-right:4em;
+        }
+    }
+    @media only screen and (min-width: 1400px) {
+        .thread-container{
+            margin-left:12em;
+            margin-right:12em;
+        }
     }
 
 

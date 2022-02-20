@@ -2,6 +2,7 @@ import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import 'firebase/compat/firestore'
 import { ref, onUnmounted } from 'vue'
+import { onSnapshot, collection, query, orderBy } from 'firebase/firestore'
 
 const config = {
   apiKey: "AIzaSyB-qvS96fHqVoBnxYSB9WlQt_Ran5zPdYs",
@@ -16,15 +17,19 @@ const config = {
 const firebaseApp = firebase.initializeApp(config)
 
 const db = firebaseApp.firestore()
-const commentCollection = db.collection('comments')
 const animelistCollection = db.collection('anime-list')
+const numCollection = db.collection('post-count')
+const postRef = collection(db, "post-count")
+let truePostNum = 0
 
-export const createComment = comment => {
-    return commentCollection.add(comment)
+export const getDB = () =>{
+    return db
 }
 
+
+
 export const getComment = async id => {
-    const comment = await commentCollection.doc(id).get()
+    const comment = await animelistCollection.doc(id).get()
     return comment.exists ? comment.data() : null
 }
 
@@ -38,18 +43,47 @@ export const getAnimeList = async id => {
 }
 
 export const userLoadComments = () => {
+    const collectionRef = collection(db, "anime-list")
+    const q = query(collectionRef, orderBy("comments.commentID", "asc"))
+
     const comments = ref([])
-    const close = commentCollection.onSnapshot(snapshot => {
+    const close = animelistCollection.onSnapshot(q, (snapshot) => {
         comments.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
     })
     onUnmounted(close)
     return comments
 }
+
 export const userLoadAnimelist = () => {
+    const collectionRef = collection(db, "anime-list")
+    const q = query(collectionRef, orderBy("timeStamp", "asc"))
+
     const animelist = ref([])
-    const close = animelistCollection.onSnapshot(snapshot => {
-        animelist.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const close = onSnapshot(q, (snapshot) => {
+        animelist.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
     })
     onUnmounted(close)
     return animelist
+    
+}
+
+export const incrementPostNo = async () =>{
+    const increment = firebase.firestore.FieldValue.increment(1);
+
+    // Document reference
+    const countRef = numCollection.doc('WatsK5jPuUlx2MZTTuat');
+
+    // Update read count
+    countRef.update({ count: increment });
+}
+onSnapshot(postRef, (snapshot)=>{
+    // postNumber.value = snapshot.docs[0].data()
+    const postNumber = ref([])
+    postNumber.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+    truePostNum = postNumber.value[0].count
+})
+
+export const getPostNum = () => {
+    console.log(truePostNum)
+    return truePostNum
 }

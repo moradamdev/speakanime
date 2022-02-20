@@ -33,13 +33,11 @@
 </template>
 
 <script>
-import { createComment } from '@/firebase'
-import { reactive } from 'vue'
-let date = new Date();
-// let comm = document.querySelector(".comment").getBoundingClientRect();
-//let commPos = comm.getBoundingClientRect();
-// const comm = document.querySelectorAll(".comment");
-// const commR = comm[this.index]
+    import 'firebase/compat/auth'
+    import 'firebase/compat/firestore'
+    import { arrayUnion } from 'firebase/firestore'
+    import { getDB, incrementPostNo, getPostNum } from '@/firebase'
+    let date = new Date();
 
     export default{
         data(){
@@ -52,7 +50,8 @@ let date = new Date();
         props: {
             cArr: Object, //object because its just one index of the array
             actualArr: Array,
-            index: Number
+            index: Number,
+            anime: Object
         },
         methods:{
             replyComment(e){
@@ -65,50 +64,40 @@ let date = new Date();
             },
             async sendComment(e){
                 e.preventDefault();
-                console.log(this.actualArr)
+
                 const parser = new DOMParser();
                 var d = new Date();
                 if(this.name == ''){
                     this.name = 'Anon';
                 }
                 
-                
-                var tempCommentObj = {
-                    commentName: this.name,
-                    commentReply: "-Replying to post no." + this.cArr.commentID,
-                    commentText: this.text,
-                    commentID: this.$parent.addCounter(),
-                    commentMonth: d.getMonth(),
-                    commentDay: d.getDate(),
-                    commentYear: d.getFullYear(),
-                    commentMinutes: ('0'+d.getMinutes()).slice(-2),
-                    commentHours: ('0'+d.getHours()).slice(-2),
-                    commentReplyNum: this.cArr.commentID
-                }
-                this.actualArr.push(tempCommentObj);
-                
-                
-                const com = reactive({
-                    commentObject: tempCommentObj
+                incrementPostNo()
+                .then(() => {
+                    var tempCommentObj = {
+                        commentName: this.name,
+                        commentReply: "-Replying to post no." + this.cArr.commentID,
+                        commentText: this.text,
+                        commentID: getPostNum(),
+                        commentMonth: d.getMonth(),
+                        commentDay: d.getDate(),
+                        commentYear: d.getFullYear(),
+                        commentMinutes: ('0'+d.getMinutes()).slice(-2),
+                        commentHours: ('0'+d.getHours()).slice(-2),
+                        commentReplyNum: this.cArr.commentID,
+                        }
+                    this.actualArr.push(tempCommentObj);
+                    getDB().collection('anime-list').doc(this.anime.id).update({
+                        // comments: {tempCommentObj}
+                        comments: arrayUnion(tempCommentObj)
+                    })
+                    this.text = ''
+                    this.showCommentReply = false;
                 })
-
-                //send data to firebase
-                await createComment({...com})
-                com.commentObject = tempCommentObj
-                // return { this.com, sendComment }
-                this.text = ''
-                this.showCommentReply = false;
+                
             },
             goToComm(e){
                 e.preventDefault();
 
-
-                // console.log(this.cArr.commentReplyNum)
-                // for(var i = 0; i < this.actualArr.length; i ++){
-                //     if(this.actualArr[i].commentID == this.cArr.commentReplyNum){
-                //         console.log(this.actualArr[i].body)
-                //     }
-                // }
                 var comm = document.querySelectorAll(".comment");
                 for(var i = 0; i < comm.length; i ++){
                     // console.log(comm[i].childNodes[0].childNodes[0])
@@ -122,17 +111,7 @@ let date = new Date();
                         });
                     }
                 }
-                // console.log(comm)
-                // var commR = comm[this.index]
-                // var divs = document.getElementsByClassName("comment")
-                // for(var i = 0; i < divs.length; i++){
-
-                // }
-                
-                // window.scrollTo(0, this.cArr.commentReplyDiv);
-                
-            }
-            
+            } 
         }
     }
 </script>
