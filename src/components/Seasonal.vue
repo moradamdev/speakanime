@@ -20,39 +20,13 @@
             </div>
             
         </div>
-        
-        <button class="reply-btn" @click="showCommentThread = !showCommentThread">Show Comments</button>
+        <!-- {{anime.animeListObj.mal_id}} -->
+        <!-- <router-link :to="`/thread/${anime.animeListObj.mal_id}`"> -->
+        <router-link :to="`/thread/${index + '-' + anime.id}`">
+            <button class="reply-btn">Show Comments</button>
+        </router-link>
     </div>
-    <div class="comments" v-if="showCommentThread" >
-        <div class="comment-div" v-scroll-lock="showCommentThread">
-            <ul>
-                <li class="comment-list" >
-                    <div class="thread-content">
-                        <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
-                        <div class="thread-text-incomment">
-                            <h3>{{anime.title}} Thread</h3>
-                            <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.title}} down below.</p>
-                        </div>
-                    </div>
-                    <div class="close-thread-btn">
-                        <button class="x-btn-com" @click="showReplyBox = !showReplyBox">Reply>></button>
-                        <button class="x-btn-com" @click="xOutComments" @submit.prevent="sendComment">Close Thread</button>
-                    </div>
-                    <div class="comment-container" v-if="showReplyBox">
-                        <form class="comment-form" action="#">
-                            <button class="x-btn" @click="xOut" @submit.prevent="sendComment">X</button>
-                            <label for="name">Name:</label><br>
-                            <input v-model="name" type="name" id="name" name="name" placeholder="Anon"><br>
-                            <label for="text">Comment:</label><br>
-                            <textarea v-model="text" type="text" rows="10" cols="50" name="commentText" form="usrform" placeholder="Enter Comment Here..."></textarea> <br>
-                            <button class="send-btn" @click="sendComment">Send</button>
-                        </form>
-                    </div>
-                    <Comment v-for="c in animeFBData[index].comments" :key='c.commentID' :cArr='c' :actualArr='commentArr' :anime='anime'/>
-                </li>
-            </ul>
-        </div>
-    </div>
+    
     
     
 </template>
@@ -60,12 +34,8 @@
 <script>
     import 'firebase/compat/auth'
     import 'firebase/compat/firestore'
-    import Comment from '@/components/Comment.vue';
-    import { arrayUnion } from 'firebase/firestore'
-    import { userLoadAnimelist, incrementPostNo, getPostNum } from '@/firebase'
-    import { getDB } from '@/firebase'
+    import { userLoadAnimelist } from '@/firebase'
     let date = new Date();
-    let postCount = 0;
 
     export default {
         data(){
@@ -75,7 +45,6 @@
                 year: date.getFullYear(),
                 hour: date.getHours(),
                 minutes: date.getMinutes(),
-                showReplyBox: false,
                 showCommentThread: false,
                 animeFBData: userLoadAnimelist(),
                 name: '',
@@ -100,60 +69,8 @@
             index: Number
         },
         methods: {
-            async sendComment(e){
-                e.preventDefault();
-                var d = new Date();
-                var postNo = 0
-                if(this.name == ''){
-                    this.name = 'Anon';
-                }
-                incrementPostNo()
-                .then(() => {
-                    
-                    var tempCommentObj = {
-                        commentName: this.name,
-                        commentText: this.text,
-                        commentID: getPostNum(),
-                        commentMonth: d.getMonth(),
-                        commentDay: d.getDate(),
-                        commentYear: d.getFullYear(),
-                        commentMinutes: ('0'+d.getMinutes()).slice(-2),
-                        commentHours: ('0'+d.getHours()).slice(-2),
-                    }
-                    this.commentArr.push(tempCommentObj);
-                    // this.database.comments.push(tempCommentObj)
-                    // const list = await getAnimeList(this.anime.id)
-                    // console.log(this.anime.id)
-                    // const firebaseApp = firebase.initializeApp(config)
-                    // const db = firebaseApp.firestore()
-
-                    getDB().collection('anime-list').doc(this.anime.id).update({
-                        // comments: {tempCommentObj}
-                        comments: arrayUnion(tempCommentObj)
-                    })
-                    
-                    this.text = ''
-                    this.showReplyBox = false;
-                })
-
-                
-                
-            },
-            xOut(){
-                this.text = ''
-                this.showReplyBox = false;
-            },
-            xOutComments(){
-                this.showCommentThread = false;
-            },
-            addCounter(){
-                postCount += 1;
-                return postCount;
-            }
         },
-        components: {
-            Comment
-        }
+        
     }
 </script>
 
@@ -299,10 +216,10 @@
             margin-right:4em;
         }
     }
-    @media only screen and (min-width: 1400px) {
+    @media only screen and (min-width: 1800px) {
         .thread-container{
-            margin-left:12em;
-            margin-right:12em;
+            margin-left:15em;
+            margin-right:15em;
         }
     }
 

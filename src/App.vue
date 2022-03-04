@@ -1,6 +1,7 @@
 <template>
   <div id="nav">
-    <h1 id="title">SpeakAni<span id="title-dot">.</span>me</h1>
+    <router-link to="/"><h1 id="title">SpeakAni<span id="title-dot">.</span>me</h1> </router-link>
+    
     <div id="router-links">
       <router-link to="/">Airing </router-link>
       <router-link to="/random">Random </router-link>
@@ -9,6 +10,11 @@
   </div>
   <router-view/>
 </template>
+
+<script>
+  
+</script>
+
 
 <style>
 *{
@@ -62,7 +68,7 @@ body{
     position: absolute;
     /* position:relative; */
 
-    width:100%;
+    width:50%;
     left:0;
     right:0;
     margin:auto;

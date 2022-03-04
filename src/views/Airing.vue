@@ -10,8 +10,16 @@
   </div>
   <img id="fade-img" src="../assets/fade.png" alt="fade image">
   <h1 id="simulcast">Simulcast Threads</h1>
+  <!-- <button @click="deleteThreads">delete all threads</button> -->
   <div id="container">
     <Seasonal v-for="(anime, index) in animeFBData" :key="anime.mal_id" :index='index' :anime='anime' :database="animeFBData"/>
+  </div>
+  <div id="to-top">
+    <a href="#">Go to top.</a>
+  </div>
+  <div class="footer">
+    <p>Follow me on Twitter for updates: <a href="https://www.twitter.com/mora_senpai" target="_blank">Twitter</a></p>
+    <p>Follow me on Twitch, I stream a lot: <a href="https://www.twitch.tv/mora_senpai" target="_blank">Twitch</a></p>
   </div>
 </template>
 
@@ -19,9 +27,8 @@
 <script>
 // @ is an alias to /src
 import Seasonal from '@/components/Seasonal.vue';
-import { createAnimeList } from '@/firebase'
+import { createAnimeList, userLoadAnimelist } from '@/firebase'
 import { reactive } from 'vue'
-import { userLoadAnimelist } from '@/firebase'
 import { serverTimestamp } from 'firebase/firestore'
 
 export default {
@@ -36,14 +43,15 @@ export default {
       animeSeason: 'winter'
     }
   },
-  updated(){
-    if(this.animeFBData.length === 0){
+  beforeUpdate(){
+    if(this.animeFBData.length == 0){
       this.sendAnime()
     }
+    console.log(this.animeFBData.length)
   },
   methods:{
-    sendAnime(){
-      fetch(`https://api.jikan.moe/v4/seasons/${this.year}/${this.animeSeason}`)
+    async sendAnime(){
+      fetch(`https://api.jikan.moe/v4/seasons/now`)
       .then(res => res.json())
       .then(data => {
       this.airingData = data.data
@@ -59,7 +67,13 @@ export default {
       }
       })
     .catch(err => console.log(err))
-    }
+    },
+    // deleteThreads(){
+    //   for(var i = 0; i < this.animeFBData.length; i ++){
+    //     deleteAnimeList(this.animeFBData[i].id);
+    //   }
+        
+    // }
   }
 }
 </script>
@@ -68,6 +82,9 @@ export default {
 * {
   --text-col: #e0fbfc;
   --highlight-col: #ee6c4d;
+}
+html {
+  scroll-behavior: smooth;
 }
 img{
   width: 50%;
@@ -99,6 +116,16 @@ img{
 #fade-img{
   display:none;
 }
+#to-top{
+  text-align: center;
+}
+
+.footer{
+  color:rgb(173, 173, 173);
+  border-top: 5px solid #293241;
+  padding: 1em 4em;
+  background: #2932418a;
+}
 
 @media only screen and (min-width: 800px) {
   #banner-text {
@@ -115,7 +142,7 @@ img{
   
 }
 
-@media only screen and (min-width: 1000px) {
+@media only screen and (min-width: 1400px) {
     #simulcast{
       text-align: left;
       margin-top:.5em;

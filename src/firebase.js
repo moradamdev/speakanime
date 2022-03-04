@@ -18,12 +18,20 @@ const firebaseApp = firebase.initializeApp(config)
 
 const db = firebaseApp.firestore()
 const animelistCollection = db.collection('anime-list')
+const randomlistCollection = db.collection('random-list')
+
 const numCollection = db.collection('post-count')
 const postRef = collection(db, "post-count")
 let truePostNum = 0
 
 export const getDB = () =>{
     return db
+}
+export const getAniColl = () => {
+    return animelistCollection;
+}
+export const getRandColl = () => {
+    return randomlistCollection;
 }
 
 
@@ -36,11 +44,22 @@ export const getComment = async id => {
 export const createAnimeList = animelist => {
     return animelistCollection.add(animelist)
 }
+export const createRandomList = randomlist => {
+    return randomlistCollection.add(randomlist)
+}
 
 export const getAnimeList = async id => {
     const animelist = await animelistCollection.doc(id).get()
     return animelist.exists ? animelist.data() : null
 }
+
+export const deleteAnimeList = id => {
+    return animelistCollection.doc(id).delete()
+}
+export const deleteRandomList = id => {
+    return randomlistCollection.doc(id).delete()
+}
+
 
 export const userLoadComments = () => {
     const collectionRef = collection(db, "anime-list")
@@ -64,6 +83,17 @@ export const userLoadAnimelist = () => {
     })
     onUnmounted(close)
     return animelist
+    
+}
+export const userLoadRandomList = () => {
+    // const collectionRandomRef = collection(db, "random-list")
+
+    const randomlist = ref([])
+    const close = randomlistCollection.onSnapshot((snapshot) => {
+        randomlist.value = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+    })
+    onUnmounted(close)
+    return randomlist
     
 }
 

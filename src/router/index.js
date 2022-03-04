@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Airing from '../views/Airing.vue'
 import Random from '../views/Random.vue'
 import About from '../views/About.vue'
+import Thread from '../components/Thread.vue'
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About
+  },
+  {
+    path: '/thread/:id',
+    name: 'Thread',
+    component: Thread
   }
 ]
 
