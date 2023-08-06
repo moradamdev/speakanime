@@ -83,7 +83,7 @@ export const userLoadAnimelist = () => {
     })
     onUnmounted(close)
     return animelist
-    
+
 }
 export const userLoadRandomList = () => {
     // const collectionRandomRef = collection(db, "random-list")
@@ -94,7 +94,7 @@ export const userLoadRandomList = () => {
     })
     onUnmounted(close)
     return randomlist
-    
+
 }
 
 export const incrementPostNo = async () =>{

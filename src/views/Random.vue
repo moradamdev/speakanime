@@ -1,34 +1,17 @@
 <template>
-  <div id="banner">
-    <img src="../assets/banner.png" alt="banner image">
-    <p id="banner-text">
-      Anime of the day<br />
-      check back every <span class="highlight">day</span>
-      to see the new thread. <br />
-      <span id="disclaimer">(Hope you get good RNG)</span>
-    </p>
-  </div>
-  <div class="random">
-    <img id="fade-img" src="../assets/fade.png" alt="fade image">
-    <h1 id="aoh">Anime of the Day</h1>
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  </div>
-  <!-- <div id="container"> -->
-    <!-- {{randomFBData[0]}} -->
-    <AnimeHour v-if='randomFBData[0]' :anime='randomFBData[0]' :doc='randomFBData[0].id'/>
-  <!-- </div> -->
+  <h1 id="aoh">Anime of the Day</h1>
+  <AnimeHour v-if='randomFBData[0]' :anime='randomFBData[0]' :doc='randomFBData[0].id'/>
   <div id="to-top">
-    
+
   </div>
   <div class="footer">
-    
+
     <div class="foot-con">
       <a href="#" id="go-top">Go to top.</a>
       <p>Follow me on Twitter for updates: <a href="https://www.twitter.com/mora_senpai" target="_blank">Twitter</a></p>
       <p>Follow me on Twitch, I stream a lot: <a href="https://www.twitch.tv/mora_senpai" target="_blank">Twitch</a></p>
     </div>
-    
+
   </div>
 </template>
 
@@ -57,7 +40,7 @@ export default {
       // maxScoreinList: this.getMaxScore()
     }
   },
-  updated(){    
+  updated(){
     if(this.randomFBData.length === 0){
       this.sendRandom()
     }
@@ -97,30 +80,15 @@ export default {
 html {
   scroll-behavior: smooth;
 }
-img{
-  width: 50%;
-  margin-bottom:-.25em;
-  position:relative;
-}
-#banner {
-  background: #3d5a80;
-  border-bottom: 5px solid #293241;
-}
-#banner-text {
-  position: absolute;
-  top:85px;
-  width:100%;
-  color: var(--text-col);
-  font-size: 4vw;
-  display: block;
-  text-align: center;
-}
-#fade-img{
-  display:none;
+#aoh{
+  margin-top:2.1em;
+  margin-bottom:.5em;
+  text-align: center; /* text align left for web*/
+  color:var(--text-col);
 }
 #to-top{
   text-align: center;
-  
+
 }
 .foot-con{
   /* position:relative; */
@@ -149,10 +117,10 @@ img{
   #banner-text {
     font-size: 2em;
   }
-  
+
 }
 
-@media only screen and (min-width: 1400px) {
+@media only screen and (min-width: 1500px) {
   #fade-img{
       display: block;
       width:100%;
@@ -169,6 +137,13 @@ img{
       margin-bottom:1em;
       color: var(--text-col);
       /* z-index: -100; */
-    } 
+    }
+}
+
+@media only screen and (min-width: 1800px) {
+  #aoh{
+    text-align: left;
+    margin-top: 1.98em;
+  }
 }
 </style>

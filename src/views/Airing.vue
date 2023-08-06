@@ -1,27 +1,27 @@
 <template>
-  <div id="banner">
-    <img src="../assets/banner.png" alt="banner image">
-    <p id="banner-text">
-      Discuss all your favorite anime,<br />
-      every <span class="highlight">week</span>, every
-      <span class="highlight">day</span>. <br />
-      <span id="disclaimer">(Don't come here if you worry about spoilers)</span>
-    </p>
-  </div>
-  <img id="fade-img" src="../assets/fade.png" alt="fade image">
   <h1 id="simulcast">Simulcast Threads</h1>
   <!-- <button @click="deleteThreads">delete all threads</button> -->
   <div id="container">
+    <div class="days">
+      <button>Sunday</button>
+      <button>Monday</button>
+      <button>Tuesday</button>
+      <button>Wednesday</button>
+      <button>Thursday</button>
+      <button>Friday</button>
+      <button>Saturday</button>
+    </div>
+
     <Seasonal v-for="(anime, index) in animeFBData" :key="anime.mal_id" :index='index' :anime='anime' :database="animeFBData"/>
   </div>
   <div id="to-top">
     <a href="#">Go to top.</a>
   </div>
   <div class="footer">
-    <p>Follow me on Twitter for updates: <a href="https://www.twitter.com/mora_senpai" target="_blank">Twitter</a></p>
-    <p>Follow me on Twitch, I stream a lot: <a href="https://www.twitch.tv/mora_senpai" target="_blank">Twitch</a></p>
+    <p>Follow me on Twitter for updates: <a href="https://www.twitter.com/abajabajuba" target="_blank">Twitter</a></p>
   </div>
 </template>
+
 
 
 <script>
@@ -40,7 +40,8 @@ export default {
       airingData: [],
       animeFBData: userLoadAnimelist(),
       year: '2022',
-      animeSeason: 'winter'
+      animeSeason: 'winter',
+      currentDay: 'sunday'
     }
   },
   beforeUpdate(){
@@ -52,18 +53,22 @@ export default {
   methods:{
     async sendAnime(){
       fetch(`https://api.jikan.moe/v4/seasons/now`)
+      // fetch(`https://api.jikan.moe/v4/seasons/${this.year}/${this.animeSeason}`)
+      // fetch(`https://api.jikan.moe/v4/schedules?filter=${this.currentDay}&kids=false`)
       .then(res => res.json())
       .then(data => {
       this.airingData = data.data
 
       for(var i = 0; i < this.airingData.length; i++){
-        const aniList = reactive({animeListObj: this.airingData[i], timeStamp: serverTimestamp(), comments: []})
-        //send data to firebase
-        createAnimeList({...aniList})
-        aniList.animeListObj = this.airingData
-        aniList.timeStamp = serverTimestamp()
-        aniList.comments = []
-        console.log(aniList)
+        if(this.airingData[i].score != null){
+          const aniList = reactive({animeListObj: this.airingData[i], timeStamp: serverTimestamp(), comments: []})
+          //send data to firebase
+          createAnimeList({...aniList})
+          aniList.animeListObj = this.airingData
+          aniList.timeStamp = serverTimestamp()
+          aniList.comments = []
+          console.log(aniList)
+        }
       }
       })
     .catch(err => console.log(err))
@@ -72,7 +77,7 @@ export default {
     //   for(var i = 0; i < this.animeFBData.length; i ++){
     //     deleteAnimeList(this.animeFBData[i].id);
     //   }
-        
+
     // }
   }
 }
@@ -80,8 +85,8 @@ export default {
 
 <style scoped>
 * {
-  --text-col: #e0fbfc;
-  --highlight-col: #ee6c4d;
+  --text-col: #255957;
+  --highlight-col: #C492B1;
 }
 html {
   scroll-behavior: smooth;
@@ -91,27 +96,12 @@ img{
   margin-bottom:-.25em;
   position:relative;
 }
-#banner {
-  background: #3d5a80;
-  border-bottom: 5px solid #293241;
-}
-#banner-text {
-  position: absolute;
-  top:85px;
-  width:100%;
-  color: var(--text-col);
-  font-size: 4vw;
-  display: block;
-  text-align: center;
-}
-#disclaimer {
-  font-size: 0.65em;
-}
-.highlight {
-  color: var(--highlight-col);
-}
+
 #simulcast {
+  margin-top:2.5em;
+  margin-bottom:.5em;
   text-align: center; /* text align left for web*/
+  color:var(--text-col);
 }
 #fade-img{
   display:none;
@@ -119,12 +109,40 @@ img{
 #to-top{
   text-align: center;
 }
+a{
+  color: var(--text-col);
+}
+
+a:visited{
+  color:var(--lightBlue-col);
+}
+.days{
+  display: flex;
+  justify-content: space-between;
+  /* margin: auto; */
+  padding-bottom: 1em;
+  text-align: center;
+  /* width:75%; */
+}
+.days button{
+  /* margin:1em; */
+  border-style: none;
+  background-color: var(--text-col);
+  color: white;
+  padding:2px;
+}
+
+.days button:focus{
+  background-color: var(--highlight-col);
+  /* margin-bottom:1em; */
+  /* border-width: 6px; */
+}
 
 .footer{
-  color:rgb(173, 173, 173);
-  border-top: 5px solid #293241;
+  color: var(--background-col);
+  border-top: 5px solid var(--text-col);
   padding: 1em 4em;
-  background: #2932418a;
+  background: var(--brown-col);
 }
 
 @media only screen and (min-width: 800px) {
@@ -139,26 +157,49 @@ img{
   #container{
     margin:2em;
   }
-  
+  .days{
+    /* margin: auto; */
+    /* width:50%; */
+    margin-bottom: 1em;
+  }
+  .days button{
+
+    font-size: 1em;
+    padding:.5em;
+    border: 2px solid black;
+  }
+
 }
 
 @media only screen and (min-width: 1400px) {
     #simulcast{
-      text-align: left;
-      margin-top:.5em;
-      margin-left:1em;
+      padding-top: 1em;
+      /* text-align: left; */
       color: var(--text-col);
       /* z-index: -100; */
-    }    
-
-    #fade-img{
-      display: block;
-      width:100%;
-      max-height: 200px;
-      position:absolute;
-      z-index: -1;
-      opacity: 85%;
     }
+    .days button{
+      width: 7em;
+      text-align: center;
+    }
+
 }
+
+  @media only screen and (min-width: 1500px) {
+      #simulcast{
+        text-align: left;
+        margin-top: 1.98em;
+        margin-left: 12em;
+      }
+
+      .days{
+        /* margin: auto; */
+        width:60%;
+        margin-left:22.25em;
+      }
+      .days button{
+        padding:.6em 0em;
+      }
+  }
 
 </style>

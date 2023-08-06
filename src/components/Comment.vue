@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="reply-container" v-if="showCommentReply">
-            <h2 class="replying-to" style="color:white">-Replying to:</h2>
+            <h2 class="replying-to">-Replying to:</h2>
             <div class="reply-copy">
                 <p class="header-copy">
                     <strong>Name:</strong> {{cArr.commentName}}
@@ -30,21 +30,21 @@
                 </p>
                 <p>{{cArr.commentText}}</p>
             </div>
-            
+
             <div class="comment-reply" v-if="showCommentReply" v-scroll-lock="true">
-                
+
                 <form class="comment-form" action="#">
                     <button class="x-btn" @click="xOut">Close</button>
-                    <label for="name">Name:</label><br>
+                    <label for="name"><strong>Name:</strong></label><br>
                     <input v-model="name" type="name" id="name" name="name" placeholder="Anonymous"><br>
-                    <label for="text">Comment:</label><br>
+                    <label for="text"><strong>Comment:</strong></label><br>
                     <textarea id="text-box" @reset="focusText" v-model="text" type="text" rows="10" cols="50" name="commentText" form="usrform" placeholder="Enter Comment Here..." autofocus></textarea> <br>
                     <button class="send-btn" @click="sendComment">Send</button>
                 </form>
             </div>
         </div>
     </div>
-    
+
 </template>
 
 <script>
@@ -81,6 +81,10 @@
                 console.log(document.querySelectorAll('#text-box'))
             },
             async sendComment(e){
+                if(this.text == ''){
+                    alert("Please enter your comment.");
+                    return;
+                }
                 const parser = new DOMParser();
                 var d = new Date();
                 if(this.name == ''){
@@ -111,7 +115,7 @@
                 }).catch(e => {
                     console.log(e)
                 })
-                
+
             },
             goToComm(e){
                 e.preventDefault();
@@ -121,15 +125,19 @@
                     // console.log(comm[i].childNodes[0].childNodes[0])
                     var tempPostNo = comm[i].lastChild.previousSibling.childNodes[0].childNodes[3].textContent;
                     // console.log(tempPostNo)
+                    if(comm[i].style.backgroundColor == 'rgb(237, 228, 153)'){
+                        comm[i].style.backgroundColor = 'var(--background-col)'
+                    }
                     if(tempPostNo == this.cArr.commentReplyNum){
                         comm[i].scrollIntoView({
-                            block: 'start',
+                            block: 'center',
                             behavior: 'smooth',
                             inline: 'start'
                         });
+                        comm[i].style.backgroundColor = '#ede499';
                     }
                 }
-            } 
+            }
         }
     }
 </script>
@@ -138,17 +146,20 @@
     .comment{
         padding: 1em 1em;
         margin: .5em 1em;
-        background:#485b74;
+        background:var(--background-col);
+        border-style:solid;
+        border-color: #255957;
+        border-radius: 1em; /* again, 0em for desktop */
     }
     .reply-comment-btn{
-        color: #272f3a;
-        padding:.2em .3em;
+        color: var(--background-col);
+        border-radius: .5em;
+        padding:.3em 1em;
         border: none;
         margin-top:1em;
-        border-radius:5px;
-        background-color: #9099a3;
-        
-        
+        background-color: var(--lightBlue-col);
+
+
     }
     .reply-comment-btn:hover{
         cursor: pointer;
@@ -158,53 +169,69 @@
 
     .x-btn{
         position: fixed;
-        right:5%;
+        right:20%;
         font-size: 1em;
-        color: #272f3a;
+        color: white;
+        margin-top:1.1em;
+        /* margin-right: 6em; */
         padding:.2em .3em;
-        border: none;
-        border-radius:5px;
-        background-color: #9099a3;
+        border-style:solid;
+        border-width: 3px;
+        border-color: var(--text-col);
+        background-color: var(--highlight-col);
     }
     .x-btn:hover{
         cursor:pointer;
-        background:rgb(129, 129, 129);
+        background:var(--darkhover-col);
         color:white;
     }
     .comment-form{
         position:relative;
         top:40%;
+        margin:1.5em;
+        margin-top:1em;
         text-align: center;
     }
     label{
         text-align: left;
-        color:white;
+        color:var(--background-col);
+
     }
     input{
-        border-radius:7px;
+        border-style: solid;
+        border-color: var(--text-col);
+        border-width:3px;
         padding:.3em;
+        background-color: var(--background-col);
+
     }
     textarea{
-        border-radius:10px;
+        border-style: solid;
+        border-color: #255957;
+        border-width:3px;
         padding:.5em;
+        background-color: var(--background-col);
         /* white-space: pre-wrap; */
     }
     .send-btn{
-        background: white;
-        border-radius:3px;
-        border:none;
-        padding:.5em 1em;
+        background: var(--lightBlue-col);
+        color: var(--background-col);
+        border-style: solid;
+        border-color: var(--text-col);
+        border-width: 3px;
+        padding:.5em 2em;
+
     }
     .send-btn:hover{
         cursor:pointer;
-        background:rgb(129, 129, 129);
+        background: var(--darkhover-col);
         color:white;
     }
     a{
         color:rgb(23, 23, 167);
     }
     .reply-container{
-        background: rgba(0, 0, 0, 0.596);
+        background: rgba(0, 0, 0, 0.801);
         position: fixed;
         left:0%;
         top:0%;
@@ -213,13 +240,26 @@
         padding-top:16em;
     }
     .replying-to{
-        background: #485b74;
+        color:#255957;
+        background: #EEEBD3;
         padding:.1em;
+        margin-right:1em;
+        margin-left:1em;
+        border-style:solid;
+        border-width: .24em;
+        border-bottom:0em;
+        border-color:#255957;
     }
     .reply-copy{
-        background: #485b74;
+        background: #EEEBD3;
         padding:1em;
         padding-bottom:2em;
+        border-style:solid;
+        border-width: .35em;
+        border-color:#255957;
+        border-top:0em;
+        margin-right:1.5em;
+        margin-left:1.5em;
     }
 
     @media only screen and (min-width: 800px) {
@@ -245,12 +285,19 @@
             margin-right:5em;
         }
         .comment{
+            margin-left: 3em;
             border-top-left-radius: 20px;
             border-bottom-right-radius: 20px;
+            transition: background .5s ease-in-out;
         }
-        @media only screen and (min-width: 1400px) {
+        @media only screen and (min-width: 1500px) {
             .container{
                 display: flex;
+            }
+            .comment{
+                border-radius: 0em;
+                /* margin:auto; */
+                max-width:78%;
             }
             .replying-to{
                 margin-left:16.65em;
@@ -265,5 +312,5 @@
             }
         }
     }
-    
+
 </style>

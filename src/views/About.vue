@@ -11,9 +11,7 @@
     </div>
 
     <div class="socials">
-      <h1>If you want any updates then check out my </h1> 
-      <h1>Twitter: <a href="https://www.twitter.com/mora_senpai">Twitter</a> </h1>
-      <h1>Twitch: <a href="https://www/twitch.com/mora_senpai">Twitch</a></h1>
+      <p id="social-p">If anything is broken, then let me know on my <a href="https://www.twitter.com/abajabajuba">Twitter</a>. </p>
     </div>
 
   </div>
@@ -25,22 +23,68 @@
     flex-direction: row;
   }
   h1{
-    margin:1em;
+    /* margin-top:6em; */
+    font-size: 1em;
   }
   p{
-    font-size: 2em;
-    margin:1em 2em;
+    font-size: .6em;
+    margin-top:1em;
   }
   .about{
-    color:rgb(214, 214, 214);
+    color:var(--text-col);
     text-align: center;
-    margin:auto;
+    /* margin:auto; */
+    margin-top:6em;
   }
   .socials{
     color:rgb(214, 214, 214);
+    font-size: 1em;
+    color:var(--text-col);
+    text-align: center;
+    margin:auto;
+    width:75%;
   }
   a{
     /* color:rgb(214, 214, 214); */
     text-decoration: none;
+  }
+  #social-p{
+    font-size:1em;
+  }
+
+  @media only screen and (min-width: 800px) {
+    h1{
+      font-size:1.5em;
+    }
+    p{
+    font-size: 1em;
+    }
+    #social-p{
+      font-size:1.25em;
+    }
+  }
+
+  @media only screen and (min-width: 1500px) {
+    .container{
+      /* margin-left: 8em; */
+      margin:auto;
+      width:50%;
+    }
+    h1{
+      text-align: left;
+    }
+    p{
+      text-align: left;
+      font-size:1.4em;
+    }
+    .socials{
+      text-align: left;
+      width:100%;
+    }
+    #social-p{
+      text-align: left;
+      font-size:1.7em;
+    }
+
   }
 </style>

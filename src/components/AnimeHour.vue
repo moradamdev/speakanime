@@ -1,13 +1,13 @@
 <template>
     <div class="thread-container">
-        
+
         <div class="thread-content">
             <img class="thread-img" :src="anime.randomListObj.images.jpg.image_url" alt="thread image">
             <div class="thread-text">
                 <h3>{{anime.randomListObj.title}} Thread</h3>
                 <p>Discuss the random anime: <span class="bold-text">{{anime.randomListObj.title_english || anime.randomListObj.title}} </span> down below.</p>
             </div>
-            
+
         </div>
         <div class="comments">
             <h1 style="color:white">Comments</h1>
@@ -34,9 +34,9 @@
             </div>
         </div>
     </div>
-    
-    
-    
+
+
+
 </template>
 
 <script>
@@ -87,7 +87,7 @@
             }
             incrementPostNo()
             .then(() => {
-                
+
                 var tempCommentObj = {
                     commentName: this.name,
                     commentText: this.text,
@@ -109,7 +109,7 @@
                     // comments: {tempCommentObj}
                     comments: arrayUnion(tempCommentObj)
                 })
-                
+
                 this.text = ''
                 this.showReplyBox = false;
             })
@@ -125,7 +125,7 @@
         components: {
             Comment
         }
-        
+
     }
 </script>
 
@@ -246,7 +246,7 @@
         }
     }
 
-    @media only screen and (min-width: 1400px) {
+    @media only screen and (min-width: 1500px) {
         .close-thread-btn{
             display: flex;
             justify-content: left;

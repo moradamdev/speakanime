@@ -11,14 +11,14 @@
                  -->
             </p>
         </div>
-        
+
         <div class="thread-content">
             <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
             <div class="thread-text">
                 <h3>{{anime.animeListObj.title}} Thread</h3>
-                <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.title}} down below.</p>
+                <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.animeListObj.title }} down below.</p>
             </div>
-            
+
         </div>
         <!-- {{anime.animeListObj.mal_id}} -->
         <!-- <router-link :to="`/thread/${anime.animeListObj.mal_id}`"> -->
@@ -26,9 +26,9 @@
             <button class="reply-btn">Show Comments</button>
         </router-link>
     </div>
-    
-    
-    
+
+
+
 </template>
 
 <script>
@@ -70,7 +70,7 @@
         },
         methods: {
         },
-        
+
     }
 </script>
 
@@ -79,7 +79,11 @@
         margin:0em;
         margin-bottom: 1em;
         padding:0em;
-        background: #536985;
+        background: #EEEBD3;
+        border-style: solid;
+        border-color: var(--text-col);
+        border-width: .35em;
+        border-radius: 1em;/* 0em for desktop*/
     }
     .header-text:strong{
         font-weight: bold;
@@ -101,7 +105,7 @@
         border-radius: 7%;
         width:33%;
         max-width: 250px;
-        padding:.5em;
+        margin:.5em;
         /* look at that vue jikan tutorial and see how he scaled images */
     }
     .reply-btn{
@@ -109,12 +113,13 @@
         padding:.5em 1em;
         border: none;
         margin-left:1em;
-        border-radius:5px;
-        background-color: #3d5a80;
+        border-radius:0px;
+        background-color: #255957;
+        margin-bottom:1em;
     }
     .reply-btn:hover{
         cursor: pointer;
-        background: #1a2636;
+        background: #15302f;
     }
     .x-btn{
         position:relative;
@@ -216,10 +221,17 @@
             margin-right:4em;
         }
     }
-    @media only screen and (min-width: 1800px) {
+    @media only screen and (min-width: 1500px) {
         .thread-container{
-            margin-left:15em;
+            margin-left:22em;
             margin-right:15em;
+            border-radius: 0em;
+        }
+        .thread-img{
+            border-radius: 0%;
+            border-style: solid;
+            border-color: var(--text-col);
+            border-width: .35em;
         }
     }
 
