@@ -1,18 +1,9 @@
 <template>
-  <h1 id="aoh">Anime of the Day</h1>
   <AnimeHour v-if='randomFBData[0]' :anime='randomFBData[0]' :doc='randomFBData[0].id'/>
   <div id="to-top">
-
+    <a href="#">Go to top.</a>
   </div>
-  <div class="footer">
 
-    <div class="foot-con">
-      <a href="#" id="go-top">Go to top.</a>
-      <p>Follow me on Twitter for updates: <a href="https://www.twitter.com/mora_senpai" target="_blank">Twitter</a></p>
-      <p>Follow me on Twitch, I stream a lot: <a href="https://www.twitch.tv/mora_senpai" target="_blank">Twitch</a></p>
-    </div>
-
-  </div>
 </template>
 
 <script>
@@ -41,37 +32,12 @@ export default {
     }
   },
   updated(){
-    if(this.randomFBData.length === 0){
-      this.sendRandom()
-    }
+    // if(this.randomFBData.length === 0){
+    //   this.sendRandom()
+    // }
   },
   methods:{
-    async sendRandom(){
-      for(var i = 0; i < 4; i ++){
-        const response = await fetch(`https://api.jikan.moe/v4/random/anime`)
-        const data = await response.json()
 
-        this.randomData.push(data.data)
-        this.temp.push(data.data.score)
-      }
-      // console.log(this.max = Math.max(...this.temp))
-      console.log('end')
-
-      this.max = Math.max(...this.temp)
-      for(var i = 0; i < 4; i ++){
-        if(this.randomData[i].score == this.max){
-          console.log(this.randomData[i])
-          console.log(this.max)
-          const randList = reactive({randomListObj: this.randomData[i], timeStamp: serverTimestamp(), comments: []})
-          createRandomList({...randList})
-          randList.randomListObj = this.randomData
-          randList.timeStamp = serverTimestamp()
-          randList.comments = []
-        }
-      }
-      // console.log(this.randomFBData.length)
-
-    },
   }
 }
 </script>
@@ -87,21 +53,13 @@ html {
   color:var(--text-col);
 }
 #to-top{
-  text-align: center;
+  position: fixed;
+  /* margin: auto; */
+  text-align: right;
+  right:1em;
+  width: 100%;
+  bottom: 0;
 
-}
-.foot-con{
-  /* position:relative; */
-  margin-top:20em;
-  min-height: 100%;
-  color:rgb(173, 173, 173);
-  border-top: 5px solid #293241;
-  padding: 1em 4em;
-  background: #2932418a;
-}
-#go-top{
-  color:blue;
-  margin-left:50%;
 }
 #aoh{
   text-align: center;
@@ -120,7 +78,7 @@ html {
 
 }
 
-@media only screen and (min-width: 1500px) {
+@media only screen and (min-width: 1400px) {
   #fade-img{
       display: block;
       width:100%;
@@ -138,6 +96,7 @@ html {
       color: var(--text-col);
       /* z-index: -100; */
     }
+
 }
 
 @media only screen and (min-width: 1800px) {

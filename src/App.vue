@@ -1,23 +1,32 @@
 <template>
   <div class="main-container">
-    <nav>
+    <nav >
       <router-link to="/"><h1 id="title">SpeakAni<span id="title-dot">.</span>me</h1> </router-link>
 
-      <div id="router-links">
-        <router-link to="/">Airing </router-link>
-        <router-link to="/recommend">Rec </router-link>
-        <router-link to="/about">About</router-link>
+
+      <div  class="mobile-nav">
+
+        <div id="router-links" @click="showHamNav">
+          <router-link class="r-link" to="/">Airing </router-link>
+          <router-link class="r-link" id="rand" to="/random">Random </router-link>
+          <router-link class="r-link" to="/recommend">Rec </router-link>
+          <router-link class="r-link" to="/about">About</router-link>
+          <router-link class="r-link" id="rand" to="/contact">Contact </router-link>
+        </div>
+
       </div>
+      <a href="#" id="hamButton" style="z-index: 9999;" @click="showHamNav"><img id="ham-icon" src="@/hamburger.png" alt="hamburger menu icon"></a>
+      <a href="#" id="hamButton" style="display: none;"><img id="ham-icon" src="@/x-out.png" alt="hamburger menu icon"></a>
     </nav>
     <!-- {{ randomFBData[0].randomListObj.images.jpg.image_url }} -->
 
     <div class="sidebar">
       <div class="sidebar-scroll">
         <img class="folder" style="top:-.4em;" src="./assets/folder.png" alt="folder sidebar image">
-        <h1  class="side-text" style="font-size:1.7em; left:7em; top:20px;" id="anime-text">Anime</h1>
+        <router-link  to="/"><h1  class="side-text" style="font-size:1.7em; left:7em; top:20px;" id="anime-text">Anime</h1></router-link>
 
         <img class="folder" style="top:5em;" src="./assets/folder.png" alt="folder sidebar image">
-        <h1  class="side-text" style="font-size:1.7em; left:6.8em; top:100px;" id="manga-text">Manga</h1>
+        <router-link  to="/contact"><h1  class="side-text" style="font-size:1.7em; left:6.2em; top:100px;" id="manga-text">Contact</h1></router-link>
 
         <img class="folder" style="top:10.5em;" src="./assets/folder.png" alt="folder sidebar image">
         <h1  class="side-text" style="font-size:1.7em; left:8.5em; top:185px;" id="top-text">Top</h1>
@@ -25,18 +34,19 @@
         <img class="folder" style="top:29em;" src="./assets/folder.png" id="folder-bottom" alt="folder sidebar image">
         <h1  class="side-text" style="font-size:1.7em; left:6em; top:480px;" id="random-text">Random</h1>
 
-        <div class="top-anime" v-if='animeFBData[0]'>
+        <div class="top-anime" v-if='topFBData[0]'>
           <div class="single-anime" v-for="i in 4">
-            <p>{{ animeFBData[i].animeListObj.title }}</p>
-            <img :src="animeFBData[i].animeListObj.images.jpg.image_url" alt="top anime image">
-
+            <a :href=topFBData[i-1].topListObj.url target="_blank">
+              <p>{{ topFBData[i-1].topListObj.title }}</p>
+              <img :src="topFBData[i-1].topListObj.images.jpg.image_url" alt="top anime image">
+            </a>
           </div>
         </div>
 
         <router-link to="/random">
           <div v-if='randomFBData[0]' class="random-anime-box">
             <h3>Looking for a wild card?</h3>
-            <img :src="randomFBData[0].randomListObj.images.jpg.image_url" id="random-anime-img" alt="random anime image">
+            <img class="random-anime-img" :src="randomFBData[0].randomListObj.images.jpg.image_url"  alt="random anime image">
 
             <!-- <AnimeHour v-if='randomFBData[0]' :anime='randomFBData[0]' :doc='randomFBData[0].id'/> -->
           </div>
@@ -53,14 +63,22 @@
 <script>
   import 'firebase/compat/auth'
   import 'firebase/compat/firestore'
-  import { userLoadRandomList, userLoadAnimelist } from '@/firebase'
+  import { userLoadRandomList, userLoadAnimelist, createTopList, userLoadToplist } from '@/firebase'
+  import { reactive } from 'vue'
+  import { serverTimestamp } from 'firebase/firestore'
+
 
 export default {
   data(){
     return {
         randomFBData: userLoadRandomList(),
-        animeFBData: userLoadAnimelist()
+        animeFBData: userLoadAnimelist(),
+        topFBData: userLoadToplist(),
+        topData: []
         };
+  },
+  updated(){
+    // this.showHamNav();
   },
   props: {
     anime: Object,
@@ -79,8 +97,25 @@ export default {
         sideButton.style.left = '.5em';
         sideButton.style.transform= 'scaleX(-1)';
       }
-
-    }
+    },
+    showHamNav(){
+      if(screen.width < 1400){
+        var mobNav = document.getElementById('router-links');
+        var hamBut = document.getElementById('hamButton');
+        console.log(hamBut.style.display)
+        if(hamBut.style.display == '' || hamBut.style.display == 'none'){
+          console.log("hey");
+          // console.log(mobNav.style.display)
+          if(mobNav.style.display == 'none' || mobNav.style.display == ''){
+            mobNav.style.display = 'block';
+            hamBut.innerHTML = `<img id="ham-icon" src="/img/x-out.b5f59f6f.png" alt="x out icon">`
+          }else{
+            mobNav.style.display = 'none';
+            hamBut.innerHTML = `<img id="ham-icon" src="/img/hamburger.06d08d05.png" alt="hamburger menu icon">`
+          }
+        }
+      }
+    },
   }
 
 }
@@ -114,28 +149,30 @@ body{
   -moz-osx-font-smoothing: grayscale;
 }
 
-nav {
+nav{
   position: fixed;
-  padding: 15px;
   display: flex;
   justify-content: space-between;
-  border-bottom: 10px solid #7a5c58;
+  border-bottom: 4px solid var(--brown-col);
   width: 100%;
   background: var(--background-col);
   z-index: 999;
   top:0px;
 }
 
-nav a {
-  font-weight: bold;
-  color: var(--text-col);
+#hamButton{
+  display: flex;
+  align-self: center;
+  margin-right:.5em;
+}
+nav a{
   text-decoration: none;
+}
+#ham-icon{
+  width: 20px;
+  height: 20px;
 }
 
-nav a.router-link-exact-active {
-  color: var(--highlight-col);
-  text-decoration: none;
-}
 .sidebar{
   display: none;
 }
@@ -149,26 +186,44 @@ nav a.router-link-exact-active {
 #title{
   margin: 0em;
   padding: 0em;
-  color:var(--text-col)
+  color:var(--text-col);
+  text-decoration: none;
 }
 #title-dot{
   color: var(--highlight-col);
 }
 #router-links{
-  padding-top: .7em;
-  padding-right:1.5em;
+  padding-top: 7em;
+  /* padding-right:1.5em; */
+  background-color:#7a5c58ec;
+  position: fixed;
+  top:0;
+  right:0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  /* z-index: 999; */
+  overflow: hidden;
+}
+.r-link{
+  display: flex;
+  font-size: 2em;
+  justify-content: center;
+  padding-bottom:2em;
+  font-weight: bold;
+  color: var(--background-col);
+  /* background-color: green; */
+  /* text-align: l; */
 }
 
 @media only screen and (min-width: 800px) {
   #router-links{
-    position: absolute;
-    /* position:relative; */
+    /* position: absolute; */
 
-    width:50%;
+    /* width:100%; */
     left:0;
     right:0;
-    margin:auto;
-    /* height: 5em; */
+    /* margin:auto; */
     text-align: center;
     font-size: 1.5em;
     top:.2em;
@@ -184,7 +239,38 @@ nav a.router-link-exact-active {
   }
 }
 
-@media only screen and (min-width: 1500px) and (min-height: 784px) {
+@media only screen and (min-width: 1400px) and (min-height: 784px) {/* 1400 for everything instead of 1500*/
+  nav {
+    position: fixed;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 10px solid #7a5c58;
+    width: 100%;
+    /* background: none; */
+    /* z-index: 999;
+    top:0px; */
+    padding:0em 1em;
+    align-content:space-between;
+  }
+
+  nav a {
+    font-weight: bold;
+    color: var(--text-col);
+    text-decoration: none;
+  }
+
+  nav a.router-link-exact-active {
+    color: var(--highlight-col);
+    text-decoration: none;
+  }
+  .sidebar #anime-text:hover{
+    color: var(--text-col);
+  }
+  .sidebar #manga-text:hover{
+    color: var(--text-col);
+  }
   .sidebar{
     display: inline-block;
     position: fixed;
@@ -270,6 +356,10 @@ nav a.router-link-exact-active {
     width:2.4em;
     /* height:3em; */
   }
+  .single-anime a{
+    text-decoration: none;
+    display: flex;
+  }
 
   .random-anime-box{
     color: var(--text-col);
@@ -279,20 +369,40 @@ nav a.router-link-exact-active {
     text-align: center;
 
   }
-  #random-anime-img{
+  .random-anime-box img{
     border-style:solid;
     border-width: 5px;
     border-color: var(--text-col);
+    max-height: 20em;
+    /* z-index: -99999999; */
   }
-  nav{
-    /* font-size: 1.8vh; */
-    padding:0em 1em;
-    align-content:space-between;
-  }
+
   #router-links{
+    /* position: relative; */
     padding:0em;
-    /* margin: 0em; */
+    height: 5%;
+    width: 20%;
+    margin: auto;
+    text-align: center;
     /* top:0em; */
+    display: block;
+    background: none;
+  }
+  #hamButton{
+    /* display: none; */
+    padding-right: 3em;
+    visibility: hidden;
+  }
+  .r-link{
+    display: inline;
+    font-size: 1em;
+    /* justify-content: center; */
+    padding:0em;
+    color: var(--text-col);
+
+  }
+  #rand{
+    display: none;
   }
 
 ::-webkit-scrollbar {
@@ -327,6 +437,12 @@ nav a.router-link-exact-active {
     margin: auto;
     width:75%;
   }
+  .sidebar-hidden{
+    /* height: 85%;
+    margin-left:13%; */
+    display: none;
+  }
+
 
 }
 </style>

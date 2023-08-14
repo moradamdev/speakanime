@@ -1,30 +1,37 @@
 <template>
-    <div class="thread-container">
+    <div v-if="selectedDay == anime.animeListObj.broadcast.day" class="thread-container">
         <div class="thread-header">
             <p class="header-text">
                 <strong>Name:</strong> SpeakAni Bot
                 <!-- <strong>ID:</strong> tempID -->
-                <strong>Date:</strong> {{month + 1}}/{{day}}/{{year}}
-                <strong>Time:</strong> {{hour}}:{{minutes}}
+                <strong>Date:</strong> {{('0' + anime.timeStamp.toDate()).slice(+5, -42)}}
+                <strong>Time:</strong> {{('0' + anime.timeStamp.toDate()).slice(+17, -36)}}
+                <a class="mal-text" :href=anime.animeListObj.url target="_blank">[MAL]</a>
                 <!-- <a href="#">Reply>></a> -->
-                <!-- <router-link to="/{{anime.mal_id}}">Reply>></router-link>
-                 -->
+                <!-- <router-link to="/{{anime.animeListObj.url}}">MAL LIINK</router-link> -->
+
+                 <!-- {{anime.animeListObj.url}} -->
             </p>
         </div>
 
         <div class="thread-content">
-            <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
+            <router-link :to="`/thread/${index + '-' + anime.id}`">
+                <img class="thread-img" :src="anime.animeListObj.images.jpg.image_url" alt="thread image">
+            </router-link>
             <div class="thread-text">
                 <h3>{{anime.animeListObj.title}} Thread</h3>
                 <p>Discuss the newest episode of {{anime.animeListObj.title_english || anime.animeListObj.title }} down below.</p>
             </div>
 
         </div>
-        <!-- {{anime.animeListObj.mal_id}} -->
-        <!-- <router-link :to="`/thread/${anime.animeListObj.mal_id}`"> -->
-        <router-link :to="`/thread/${index + '-' + anime.id}`">
-            <button class="reply-btn">Show Comments</button>
-        </router-link>
+
+        <div class="show-comments-container">
+            <router-link :to="`/thread/${index + '-' + anime.id}`">
+                <button class="reply-btn">Show Comments</button>
+            </router-link>
+            <p v-if="anime.comments.length != 1" style="margin-left:.5em;"> >>{{ anime.comments.length }} Replies</p>
+            <p v-else style="margin-left:.5em;"> >> 1 Reply</p>
+        </div>
     </div>
 
 
@@ -40,9 +47,6 @@
     export default {
         data(){
             return {
-                month: date.getMonth(),
-                day: date.getDate(),
-                year: date.getFullYear(),
                 hour: date.getHours(),
                 minutes: date.getMinutes(),
                 showCommentThread: false,
@@ -66,9 +70,14 @@
         props: {
             anime: Object,
             database: Object,
-            index: Number
+            index: Number,
+            selectedDay: String
         },
         methods: {
+            test(){
+                // console.log(('0' + this.animeFBData[0].timeStamp.toDate()).slice(+1, -42));
+                //console.log(('0' + this.animeFBData[0].timeStamp.toDate()).slice(+17, -36));
+            }
         },
 
     }
@@ -83,7 +92,7 @@
         border-style: solid;
         border-color: var(--text-col);
         border-width: .35em;
-        border-radius: 1em;/* 0em for desktop*/
+        border-radius: .25em;
     }
     .header-text:strong{
         font-weight: bold;
@@ -102,20 +111,38 @@
         padding: 0 0 0 1em;
     }
     .thread-img{
-        border-radius: 7%;
-        width:33%;
+        border-radius: 2%;
+        width:95%;
         max-width: 250px;
+        min-width: 200px;
         margin:.5em;
         /* look at that vue jikan tutorial and see how he scaled images */
+    }
+    .show-comments-container{
+        display: flex;
+        margin-left:1em;
+        margin-bottom:1em;
+    }
+    .show-comments-container p{
+        align-self: center;
+        color: var(--lightBlue-col);
+    }
+    .mal-text{
+        font-weight: bold;
+        color: var(--lightBlue-col);
+        text-decoration: none;
+        /* text-decoration: none; */
+        margin-left: 1em;
+        font-size: .8em;
+        align-self: center;
     }
     .reply-btn{
         color: white;
         padding:.5em 1em;
         border: none;
-        margin-left:1em;
         border-radius:0px;
         background-color: #255957;
-        margin-bottom:1em;
+
     }
     .reply-btn:hover{
         cursor: pointer;
@@ -211,7 +238,7 @@
     @media only screen and (min-width: 800px) {
         .thread-container{
             padding:1em;
-            border-radius: 20px;
+            border-radius: 1%;
         }
 
     }
@@ -221,7 +248,7 @@
             margin-right:4em;
         }
     }
-    @media only screen and (min-width: 1500px) {
+    @media only screen and (min-width: 1400px) {
         .thread-container{
             margin-left:22em;
             margin-right:15em;

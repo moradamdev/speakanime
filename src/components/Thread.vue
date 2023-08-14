@@ -1,11 +1,13 @@
 <template>
     <div class="thread-content">
         <img class="thread-img" :src="animeFBData[threadIndex].animeListObj.images.jpg.image_url" alt="thread image">
-        <div class="thread-text">
-            <h3>{{animeFBData[threadIndex].animeListObj.title}} Thread</h3>
-            <p>Discuss the newest episode of {{animeFBData[threadIndex].animeListObj.title_english || animeFBData[threadIndex].title}} down below.</p>
-        </div>
-
+            <div class="thread-text">
+                <div id="thread-sidebyside">
+                    <h3 class="title-text">{{animeFBData[threadIndex].animeListObj.title}} Thread</h3>
+                    <a class="mal-text" :href=animeFBData[threadIndex].animeListObj.url target="_blank">[MAL]</a>
+                </div>
+                <p class="discuss">Discuss the newest episode of {{ animeFBData[threadIndex].animeListObj.title_english || animeFBData[threadIndex].animeListObj.title }} down below.</p>
+            </div>
     </div>
     <div class="container">
         <div class="comments">
@@ -14,14 +16,16 @@
                 <button class="reply-btn" @click="showReplyBox = !showReplyBox">Reply>></button>
             </div>
             <div class="comment-d">
-                <div class="comment-container" v-if="showReplyBox">
+                <div class="comment-container" v-if="showReplyBox" v-scroll-lock="true">
                     <form class="comment-form" action="#">
-                        <button class="x-btn" @click="xOut">X</button> <br>
                         <label for="name"><strong>Name:</strong></label><br>
                         <input v-model="name" type="name" id="name" name="name" placeholder="Anon"><br>
                         <label for="text"><strong>Comment:</strong></label><br>
-                        <textarea v-model="text" type="text" rows="10" cols="50" name="commentText" form="usrform" placeholder="Enter Comment Here..."></textarea> <br>
-                        <button class="send-btn" @click="sendComment">Send</button>
+                        <textarea v-model="text" type="text" rows="10" cols="47" name="commentText" form="usrform" placeholder="Enter Comment Here..."></textarea> <br>
+                        <div class="send-close">
+                            <button class="x-btn" @click="xOut">Close</button> <br>
+                            <button class="send-btn" @click="sendComment">Send</button>
+                        </div>
                     </form>
                 </div>
                 <ul>
@@ -30,6 +34,10 @@
                     </li>
                 </ul>
             </div>
+        </div>
+        <div class="bottom-of-page" style="visibility: hidden; padding-bottom: 15em;">Bottom</div>
+        <div id="to-top">
+            <a href="#">Go to top.</a>
         </div>
     </div>
 </template>
@@ -129,158 +137,6 @@ export default {
 }
 </script>
 
-<style scoped>
-    .thread-img{
-        border-radius: 7%;
-        width:33%;
-        padding:.5em;
-    }
-    .header-text:strong{
-        font-weight: bold;
-    }
-    .thread-content{
-        display:flex;
-        margin-top:6em;
-    }
-    .thread-text{
-        padding: 1em 0em;
-    }
-    .reply-btn{
-        color: white;
-        padding:.25em 1em;
-        border: none;
-        margin-left:2em;
-        margin-top:-.25em;
-        border-radius:5px;
-        background-color: var(--lightBlue-col);
-    }
-    .reply-btn:hover{
-        cursor: pointer;
-        background: var(--darkhover-col);
-    }
-    .x-btn{
-        font-size: 1em;
-        color: white;
-        margin-top:1.1em;
-        margin-left: 75%;
-        padding:.2em .3em;
-        border-style:solid;
-        border-width: 3px;
-        border-color: var(--text-col);
-        background-color: var(--highlight-col);
-    }
-    .x-btn:hover{
-        cursor:pointer;
-        background:rgb(255, 48, 48);
-        color:white;
-    }
-    .comment-container{
-        margin:auto;
-        text-align: center;
-        width:100%;
+<style scoped src="../assets/styles/thread.css">
 
-    }
-    .comment-form{
-        margin:auto;
-        background-color: rgba(0, 0, 0, 0.356);
-        text-align: center;
-        padding-bottom:1em;
-        padding-top: 1em;
-    }
-
-    label{
-        text-align: left;
-        color:var(--background-col);
-
-    }
-    input{
-        border-style: solid;
-        border-color: var(--text-col);
-        border-width:3px;
-        padding:.3em;
-        background-color: var(--background-col);
-
-    }
-    textarea{
-        border-style: solid;
-        border-color: #255957;
-        border-width:3px;
-        padding:.5em;
-        background-color: var(--background-col);
-        /* white-space: pre-wrap; */
-    }
-    .send-btn{
-        background: var(--lightBlue-col);
-        color: var(--background-col);
-        border-style: solid;
-        border-color: var(--text-col);
-        border-width: 3px;
-        padding:.5em 2em;
-
-    }
-    .send-btn:hover{
-        cursor:pointer;
-        background: var(--darkhover-col);
-        color:white;
-    }
-    .comment-list{
-        list-style: none;
-    }
-    .thread-text-incomment{
-        color:white;
-    }
-    .close-thread-btn{
-        display: flex;
-        justify-content: right;
-        margin-top:-2em;
-        margin-right:1em;
-    }
-
-    @media only screen and (min-width: 800px) {
-        .thread-container{
-            padding:1em;
-            border-radius: 20px;
-        }
-        .thread-img{
-            margin-left: 3em;
-            max-width: 250px;
-        }
-        .comments{
-            margin:0em 3em;
-        }
-    }
-
-    @media only screen and (min-width: 1500px) {
-        .thread-container{
-            margin-left:1em;
-            margin-right:1em;
-        }
-        .close-thread-btn{
-            display: flex;
-            justify-content: left;
-            /* margin-top:-1em; */
-            margin-bottom:1em;
-            margin-left:12em;
-        }
-        .thread-content{
-            background:#314b6d57;
-            border-bottom: 5px solid #293241;
-            margin-top:3.6em;
-            padding-left: 19.5em;
-        }
-
-        .container{
-            padding-left: 19.5em;
-            /* margin-top:0em; */
-        }
-        .comment-list{
-            margin-left:-22em;
-        }
-
-
-    }
-
-    @media only screen and (min-width: 1500px) {
-
-    }
 </style>

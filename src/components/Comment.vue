@@ -12,33 +12,33 @@
             <div class="thread-content">
                 <!-- <img class="thread-img" :src="anime.images.jpg.image_url" alt="thread image"> -->
                 <div class="thread-text">
-                    <a href="#" @click="goToComm" style=color:#ce5f44>{{cArr.commentReply}}</a>
-                    <!-- <a style="color:blue;">In reply to post no.{{cArr.commentReply}}</a> -->
+                    <a href="#" @click="goToComm" style="color:#ce5f44" >{{cArr.commentReply}}</a>
                     <p>{{cArr.commentText}}</p>
                 </div>
                 <button class="reply-comment-btn" @click="replyComment">Reply>></button>
             </div>
         </div>
         <div class="reply-container" v-if="showCommentReply">
-            <h2 class="replying-to">-Replying to:</h2>
+
             <div class="reply-copy">
+                <h2 class="replying-to">-Replying to:</h2>
                 <p class="header-copy">
                     <strong>Name:</strong> {{cArr.commentName}}
                     <strong class="p-num">Post No. </strong> {{cArr.commentID}}
                     <strong>Date:</strong> {{cArr.commentMonth + 1}}/{{cArr.commentDay}}/{{cArr.commentYear}}
                     <strong>Time:</strong> {{cArr.commentHours}}:{{cArr.commentMinutes}}
                 </p>
-                <p>{{cArr.commentText}}</p>
+                <p>{{cArr.commentText.substring(0,225)}}</p>
             </div>
 
             <div class="comment-reply" v-if="showCommentReply" v-scroll-lock="true">
 
                 <form class="comment-form" action="#">
-                    <button class="x-btn" @click="xOut">Close</button>
                     <label for="name"><strong>Name:</strong></label><br>
                     <input v-model="name" type="name" id="name" name="name" placeholder="Anonymous"><br>
                     <label for="text"><strong>Comment:</strong></label><br>
-                    <textarea id="text-box" @reset="focusText" v-model="text" type="text" rows="10" cols="50" name="commentText" form="usrform" placeholder="Enter Comment Here..." autofocus></textarea> <br>
+                    <textarea id="text-box" @reset="focusText" v-model="text" type="text" rows="10" cols="47" name="commentText" form="usrform" placeholder="Enter Comment Here..." autofocus></textarea> <br>
+                    <button class="x-btn" @click="xOut">Close</button>
                     <button class="send-btn" @click="sendComment">Send</button>
                 </form>
             </div>
@@ -59,7 +59,7 @@
                 showCommentReply: false,
                 name: '',
                 text: '',
-                };
+            };
         },
         props: {
             cArr: Object, //object because its just one index of the array
@@ -81,7 +81,7 @@
                 console.log(document.querySelectorAll('#text-box'))
             },
             async sendComment(e){
-                if(this.text == ''){
+                if(this.text == '' || this.name == ''){
                     alert("Please enter your comment.");
                     return;
                 }
@@ -168,11 +168,12 @@
     }
 
     .x-btn{
-        position: fixed;
-        right:20%;
-        font-size: 1em;
+        /* position: fixed; */
+        /* right:20%; */
+        /* font-size: 1em; */
         color: white;
-        margin-top:1.1em;
+        margin-right:15em;
+        /* margin-top:1.1em; */
         /* margin-right: 6em; */
         padding:.2em .3em;
         border-style:solid;
@@ -188,7 +189,7 @@
     .comment-form{
         position:relative;
         top:40%;
-        margin:1.5em;
+        /* margin:1.5em; */
         margin-top:1em;
         text-align: center;
     }
@@ -206,6 +207,7 @@
 
     }
     textarea{
+        margin: auto;
         border-style: solid;
         border-color: #255957;
         border-width:3px;
@@ -237,18 +239,20 @@
         top:0%;
         height:100%;
         width: 100%;
-        padding-top:16em;
+        padding-top:12vw;
+        overflow: hidden;
+        z-index: 9999;
     }
     .replying-to{
         color:#255957;
-        background: #EEEBD3;
-        padding:.1em;
-        margin-right:1em;
-        margin-left:1em;
-        border-style:solid;
-        border-width: .24em;
-        border-bottom:0em;
-        border-color:#255957;
+        /* background: #EEEBD3; */
+        /* padding:.1em; */
+        /* margin-right:1em; */
+        /* margin-left:1em; */
+        /* border-style:solid; */
+        /* border-width: .24em; */
+        /* border-bottom:0em; */
+        /* border-color:#255957; */
     }
     .reply-copy{
         background: #EEEBD3;
@@ -257,32 +261,23 @@
         border-style:solid;
         border-width: .35em;
         border-color:#255957;
-        border-top:0em;
+        /* border-top:0em; */
         margin-right:1.5em;
         margin-left:1.5em;
     }
 
     @media only screen and (min-width: 800px) {
-        .replying-to{
+        /* .replying-to{
             background: #485b74;
             padding:.2em;
             width:7em;
             margin:0em 5em;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-        }
+        } */
         .reply-copy{
-            background: #485b74;
-            padding:1em;
-            padding-bottom:2em;
-            margin: 0em 7.5em;
-            border-bottom-left-radius: 20px;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-        .x-btn{
-            margin-top:1em;
-            margin-right:5em;
+            margin:auto;
+            width:60%;
         }
         .comment{
             margin-left: 3em;
@@ -290,7 +285,7 @@
             border-bottom-right-radius: 20px;
             transition: background .5s ease-in-out;
         }
-        @media only screen and (min-width: 1500px) {
+        @media only screen and (min-width: 1400px) {
             .container{
                 display: flex;
             }
@@ -299,16 +294,14 @@
                 /* margin:auto; */
                 max-width:78%;
             }
-            .replying-to{
-                margin-left:16.65em;
-            }
             .reply-copy{
-                margin-left:25em;
-                margin-right:25em;
+                /* margin-left:31em;
+                margin-right:31em; */
+                margin:auto;
+                width:40%;
             }
-            .x-btn{
-                margin-top:1em;
-                margin-right:20em;
+            .reply-container{
+                padding-top:7em;
             }
         }
     }

@@ -3,16 +3,20 @@
   <!-- <button @click="deleteThreads">delete all threads</button> -->
   <div id="container">
     <div class="days">
-      <button>Sunday</button>
-      <button>Monday</button>
-      <button>Tuesday</button>
-      <button>Wednesday</button>
-      <button>Thursday</button>
-      <button>Friday</button>
-      <button>Saturday</button>
+      <button  @click="setDay">Sunday</button>
+      <button  @click="setDay">Monday</button>
+      <button  @click="setDay">Tuesday</button>
+      <button  @click="setDay">Wednesday</button>
+      <button  @click="setDay">Thursday</button>
+      <button  @click="setDay">Friday</button>
+      <button  @click="setDay">Saturday</button>
+      <!-- <button @click="sendAnime">send anime</button>
+      <button @click="delDay">Delete Specific Day</button> -->
+
     </div>
 
-    <Seasonal v-for="(anime, index) in animeFBData" :key="anime.mal_id" :index='index' :anime='anime' :database="animeFBData"/>
+
+    <Seasonal v-for="(anime, index) in animeFBData" :key="anime.mal_id" :index='index' :anime='anime' :database="animeFBData" :selectedDay="selectedDay"/>
   </div>
   <div id="to-top">
     <a href="#">Go to top.</a>
@@ -27,9 +31,13 @@
 <script>
 // @ is an alias to /src
 import Seasonal from '@/components/Seasonal.vue';
-import { createAnimeList, userLoadAnimelist } from '@/firebase'
+import { createAnimeList, userLoadAnimelist, createRandomList, deleteRandomList, userLoadRandomList, db, deleteAnimeListByDay } from '@/firebase'
 import { reactive } from 'vue'
-import { serverTimestamp } from 'firebase/firestore'
+import { deleteDoc, serverTimestamp, doc } from 'firebase/firestore'
+let date = new Date();
+console.log(date.getDay());
+
+
 
 export default {
   components: {
@@ -39,40 +47,75 @@ export default {
     return {
       airingData: [],
       animeFBData: userLoadAnimelist(),
+      randomData: [],
+      randomFBData: userLoadRandomList(),
       year: '2022',
       animeSeason: 'winter',
-      currentDay: 'sunday'
+      scheduleDays: ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'],
+      currentDay: date.getDay(),
+      selectedDay: date.getDay(),
+      max: 0,
+      temp: []
     }
+  },
+  created(){
+    this.selectedDay = this.scheduleDays[this.currentDay];
   },
   beforeUpdate(){
     if(this.animeFBData.length == 0){
       this.sendAnime()
     }
-    console.log(this.animeFBData.length)
+
+    let collection = document.getElementsByTagName('button');
+    // console.log(document.getElementsByTagName('button'));
+    for(var i = 0; i < collection.length; i ++){
+      if(collection[i].innerHTML == this.selectedDay.substring(0, this.selectedDay.length-1)){
+          collection[i].focus();
+      }
+    }
+    // console.log(this.animeFBData.length)
   },
   methods:{
-    async sendAnime(){
-      fetch(`https://api.jikan.moe/v4/seasons/now`)
-      // fetch(`https://api.jikan.moe/v4/seasons/${this.year}/${this.animeSeason}`)
-      // fetch(`https://api.jikan.moe/v4/schedules?filter=${this.currentDay}&kids=false`)
-      .then(res => res.json())
-      .then(data => {
-      this.airingData = data.data
+    setDay(e){
+      console.log(this.scheduleDays[this.currentDay]);
+      this.selectedDay = e.target.innerHTML + "s";
+      console.log(this.selectedDay);
+      // this.selectedDay = document.getElement(but).innerHTML;
+      // let a = but.getAttribute("a-day");
+    },
+    async createRandom(){
+      for(var i = 0; i < 4; i ++){
+        const response = await fetch(`https://api.jikan.moe/v4/random/anime`)
+        const data = await response.json()
 
-      for(var i = 0; i < this.airingData.length; i++){
-        if(this.airingData[i].score != null){
-          const aniList = reactive({animeListObj: this.airingData[i], timeStamp: serverTimestamp(), comments: []})
-          //send data to firebase
-          createAnimeList({...aniList})
-          aniList.animeListObj = this.airingData
-          aniList.timeStamp = serverTimestamp()
-          aniList.comments = []
-          console.log(aniList)
+        this.randomData.push(data.data)
+        this.temp.push(data.data.score)
+      }
+      // console.log(this.max = Math.max(...this.temp))
+      console.log('end')
+
+      this.max = Math.max(...this.temp)
+      for(var i = 0; i < 4; i ++){
+        if(this.randomData[i].score == this.max){
+          console.log(this.randomData[i])
+          console.log(this.max)
+          const randList = reactive({randomListObj: this.randomData[i], timeStamp: serverTimestamp(), comments: []})
+          createRandomList({...randList})
+          randList.randomListObj = this.randomData
+          randList.timeStamp = serverTimestamp()
+          randList.comments = []
         }
       }
-      })
-    .catch(err => console.log(err))
+      // console.log(this.randomFBData.length)
+
     },
+    async delDay(){
+      deleteAnimeListByDay("Fridays");
+      // await deleteDoc(doc(db, "random-list", "JjJL2QOqJBAclcqXFCml"));
+      // deleteRandomList(this.randomFBData[0].id);
+      // deleteRandomList();
+      // console.log(this.randomFBData);
+    }
     // deleteThreads(){
     //   for(var i = 0; i < this.animeFBData.length; i ++){
     //     deleteAnimeList(this.animeFBData[i].id);
@@ -98,7 +141,7 @@ img{
 }
 
 #simulcast {
-  margin-top:2.5em;
+  margin-top:1.5em;
   margin-bottom:.5em;
   text-align: center; /* text align left for web*/
   color:var(--text-col);
@@ -117,7 +160,7 @@ a:visited{
   color:var(--lightBlue-col);
 }
 .days{
-  display: flex;
+  /* display: flex; */
   justify-content: space-between;
   /* margin: auto; */
   padding-bottom: 1em;
@@ -158,6 +201,7 @@ a:visited{
     margin:2em;
   }
   .days{
+    display: flex;
     /* margin: auto; */
     /* width:50%; */
     margin-bottom: 1em;
@@ -182,10 +226,13 @@ a:visited{
       width: 7em;
       text-align: center;
     }
+    .footer{
+      padding-left:24em;
+    }
 
 }
 
-  @media only screen and (min-width: 1500px) {
+  @media only screen and (min-width: 1400px) {
       #simulcast{
         text-align: left;
         margin-top: 1.98em;

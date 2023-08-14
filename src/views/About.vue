@@ -3,11 +3,22 @@
     <div class="about">
       <h1>About</h1>
       <p>
-        This is a website for people who wanna talk about anime with others. <br>
-        It was originally made for discussing currently airing anime, but I've also added a random anime page. <br>
-        Maybe one day there will be good RNG and you'll see one of your favorite shows. I'll probably also add my own favorite shows. <br>
+        This is a website for people who want to talk about current anime with others. <br>
+        It was originally made for discussing currently airing anime, but I've also added a random anime page and a recommended anime page. <br>
+        Maybe one day there will be good RNG and you'll see one of your favorite shows. <br>
       </p>
-      <p>Every day at 5PM EST, Speakani.me checks to see if a new episode has aired and will make a new thread if one has aired.</p>
+      <br>
+      <h1>How it works</h1>
+      <ul>
+        <li><p>Every day at midnight (Eastern Time), Speakani.me refreshes every thread for the current day and a new thread is created for the new episode.</p></li>
+        <li><p>Every hour a new random anime thread is created.</p></li>
+        <li><p>Once a month, I personally create a new thread for an anime that I recommend.</p></li>
+        <li><p>The top anime list gets updated every week.</p></li>
+      </ul>
+
+
+
+
     </div>
 
     <div class="socials">
@@ -24,17 +35,19 @@
   }
   h1{
     /* margin-top:6em; */
-    font-size: 1em;
+    font-size: 1.2em;
   }
   p{
-    font-size: .6em;
+    font-size: 1em;
     margin-top:1em;
   }
   .about{
     color:var(--text-col);
     text-align: center;
     /* margin:auto; */
-    margin-top:6em;
+    margin-top:4em;
+    margin-left:.3em;
+    margin-right: .3em;
   }
   .socials{
     color:rgb(214, 214, 214);
@@ -43,13 +56,10 @@
     text-align: center;
     margin:auto;
     width:75%;
-  }
-  a{
-    /* color:rgb(214, 214, 214); */
-    text-decoration: none;
+    padding-bottom: 15em;
   }
   #social-p{
-    font-size:1em;
+    font-size: 1em;
   }
 
   @media only screen and (min-width: 800px) {
@@ -64,7 +74,7 @@
     }
   }
 
-  @media only screen and (min-width: 1500px) {
+  @media only screen and (min-width: 1400px) {
     .container{
       /* margin-left: 8em; */
       margin:auto;
